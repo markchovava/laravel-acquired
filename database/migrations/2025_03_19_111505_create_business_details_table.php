@@ -8,17 +8,17 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 
      */
     public function up(): void
     {
-        Schema::create('failed_jobs', function (Blueprint $table) {
+        Schema::create('business_details', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->unique();
-            $table->text('connection');
-            $table->text('queue');
-            $table->longText('payload');
-            $table->longText('exception');
-            $table->timestamp('failed_at')->useCurrent();
+            $table->bigInteger('user_id')->nullable();
+            $table->bigInteger('business_id')->nullable();
+            $table->string('name')->nullable();
+            $table->string('value')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('business_details');
     }
 };

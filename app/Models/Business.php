@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Business extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
         'user_id',
@@ -21,6 +18,7 @@ class Business extends Model
         'address',
         'phone',
         'email',
+        'status',
         'created_at',
         'updated_at',
     ];
@@ -45,6 +43,4 @@ class Business extends Model
     public function business_details(){
         return $this->hasMany(BusinessDetail::class, 'business_id', 'id');
     }
-
-    
 }

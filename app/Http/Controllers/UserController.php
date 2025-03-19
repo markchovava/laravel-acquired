@@ -20,71 +20,55 @@ class UserController extends Controller
     
     public function index(){
         $user_id = Auth::user()->id;
-        $data = User::with(['role'])
+        $data = User::with(['role', ])
                 ->where('id', '!=', $user_id)
                 ->orderBy('updated_at', 'DESC')
-                ->orderBy('fname', 'ASC')
-                ->orderBy('lname', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->paginate(12);
         return UserResource::collection($data);
     }
 
-    public function searchFirstName(Request $request){
+    public function search($search){
         $user_id = Auth::user()->id;
-        if(!empty($request->search)) {
-            $data = User::with(['role'])
+        if(!empty($search)) {
+            $data = User::with(['role', ])
                     ->where('id', '!=', $user_id)
-                    ->where('fname', 'LIKE', '%' . $request->search . '%')
+                    ->where('name', 'LIKE', '%' . $search . '%')
                     ->orderBy('updated_at', 'DESC')
-                    ->orderBy('fname', 'ASC')
+                    ->orderBy('name', 'ASC')
                     ->paginate(12);
             return UserResource::collection($data);
         }
-        $data = User::with(['role'])
+        $data = User::with(['role', ])
                 ->where('id', '!=', $user_id)
                 ->orderBy('updated_at', 'DESC')
-                ->orderBy('fname', 'ASC')
-                ->paginate(12);
-        return UserResource::collection($data);
-    }
-
-    public function searchLastName(Request $request){
-        $user_id = Auth::user()->id;
-        if(!empty($request->search)) {
-            $data = User::with(['role'])
-                    ->where('id', '!=', $user_id)
-                    ->where('lname', 'LIKE', '%' . $request->search . '%')
-                    ->orderBy('updated_at', 'DESC')
-                    ->orderBy('lname', 'ASC')
-                    ->paginate(12);
-            return UserResource::collection($data);
-        }
-        $data = User::with(['role'])
-                ->where('id', '!=', $user_id)
-                ->orderBy('updated_at', 'DESC')
-                ->orderBy('lname', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->paginate(12);
         return UserResource::collection($data);
     }
 
     public function view($id){
-        $data = User::with(['role'])->find($id);
+        $data = User::with(['role', ])->find($id);
         return new UserResource($data);
     }
 
     public function store(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        if(isset($user)) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Email already exist, try another one.'
+            ]);
+        }
         $code = $this->generateRandomText();
         $data = new User();
         $data->role_level = $request->role_level ?? 4;
-        $data->membership_id = $request->membership_id ?? '';
-        $data->fname = $request->fname;
-        $data->lname = $request->lname;
-        $data->address = $request->address;
-        $data->phone = $request->phone;
+        $data->is_admin = $request->is_admin ?? 'No';
+        $data->name = $request->name;
         $data->email = $request->email;
-        $data->skillset = $request->skillset;
+        $data->phone = $request->phone;
+        $data->address = $request->address;
         $data->bio = $request->bio;
-        $data->acquisition = $request->acquisition;
         $data->linkedin = $request->linkedin;
         $data->password = Hash::make($code);
         $data->code = $code;
@@ -101,21 +85,24 @@ class UserController extends Controller
     }
 
     public function update(Request $request, $id){
-        $code = $this->generateRandomText();
+        $email = User::where('id', '!=', $id)
+            ->where('email', $request->email)
+            ->first();
+        if(isset($email)){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Email already exists, try another one.',
+            ]);
+        }
         $data = User::find($id);
         $data->role_level = $request->role_level ?? 4;
-        $data->membership_id = $request->membership_id ?? '';
-        $data->fname = $request->fname;
-        $data->lname = $request->lname;
-        $data->address = $request->address;
-        $data->phone = $request->phone;
+        $data->is_admin = $request->is_admin ?? 'No';
+        $data->name = $request->name;
         $data->email = $request->email;
-        $data->skillset = $request->skillset;
+        $data->phone = $request->phone;
+        $data->address = $request->address;
         $data->bio = $request->bio;
-        $data->acquisition = $request->acquisition;
         $data->linkedin = $request->linkedin;
-        $data->password = Hash::make($code);
-        $data->code = $code;
         $data->updated_at = now();
         $data->save();
         /*  */

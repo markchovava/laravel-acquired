@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AppInfo extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
         'user_id',
@@ -18,8 +15,8 @@ class AppInfo extends Model
         'email',
         'website',
         'facebook',
-        'whatsapp',
         'twitter',
+        'whatsapp',
         'description',
         'created_at',
         'updated_at',
@@ -28,6 +25,4 @@ class AppInfo extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-
-
 }

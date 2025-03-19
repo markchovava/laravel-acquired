@@ -7,25 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * 
      * Run the migrations.
      * 
      */
-
     public function up(): void
     {
-        Schema::create('app_infos', function (Blueprint $table) {
+        Schema::create('business_messages', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('business_id')->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->string('name')->nullable();
-            $table->longText('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->string('website')->nullable();
-            $table->string('facebook')->nullable();
-            $table->string('whatsapp')->nullable();
-            $table->string('twitter')->nullable();
-            $table->longText('description')->nullable();
+            $table->string('timeframe')->nullable();
+            $table->longText('message')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }
@@ -35,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_infos');
+        Schema::dropIfExists('business_messages');
     }
 };

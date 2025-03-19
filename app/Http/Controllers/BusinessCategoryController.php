@@ -6,10 +6,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BusinessCategory;
 use App\Http\Resources\BusinessCategoryResource;
-
+use Illuminate\Support\Facades\Log;
 
 class BusinessCategoryController extends Controller
 {
+
+    public function indexByBusiness($id) {
+        $data = BusinessCategory::with(['business', 'category'])
+                ->where('business_id', $id)
+                ->orderBy('updated_at', 'DESC')
+                ->paginate(12);
+        return BusinessCategoryResource::collection($data);
+    }
+
+    public function indexByCategory($id) {
+        $data = BusinessCategory::with(['business', 'category'])
+                ->where('category_id', $id)
+                ->orderBy('updated_at', 'DESC')
+                ->paginate(12);
+        return BusinessCategoryResource::collection($data);
+    }
     
     public function index() {
         $data = BusinessCategory::with(['business', 'category'])
@@ -25,6 +41,7 @@ class BusinessCategoryController extends Controller
     }
 
     public function store(Request $request) {
+        Log::info($request);
         $user_id = Auth::user()->id;
         $data = new BusinessCategory();
         $data->user_id = $user_id;
@@ -41,25 +58,15 @@ class BusinessCategoryController extends Controller
         ]);
     }
 
-    public function indexByBusiness($business_id) {
-        $data = BusinessCategory::with(['business', 'category'])
-                ->where('business_id', $business_id)
-                ->orderBy('updated_at', 'DESC')
-                ->paginate(12);
-        return BusinessCategoryResource::collection($data);
-    }
 
-    public function indexByCategory($category_id) {
-        $data = BusinessCategory::with(['business', 'category'])
-                ->where('category_id', $category_id)
-                ->orderBy('updated_at', 'DESC')
-                ->paginate(12);
-        return BusinessCategoryResource::collection($data);
-    }
 
     public function delete($id) {
         $data = BusinessCategory::find($id);
         $data->delete();
+        return response()->json([
+            'status' => 1,
+            'message' => 'Data deleted successfully.'
+        ]);
     }
 
     

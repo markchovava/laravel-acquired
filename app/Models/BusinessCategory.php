@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessCategory extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
         'user_id',
@@ -29,6 +26,4 @@ class BusinessCategory extends Model
     public function category(){
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
-
-
 }

@@ -24,6 +24,7 @@ class AuthController extends Controller
         }
         $data = new User();
         $data->role_level = 4;
+        $data->is_admin = 'No';
         $data->email = $request->email;
         $data->code = $request->password;
         $data->password = Hash::make($request->password);
@@ -33,7 +34,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => 1,
             'message' => 'Created Successfully.',
-            'data' => new AuthResource($data),
+            'data' => new UserResource($data),
         ]);
     }
 
@@ -58,7 +59,7 @@ class AuthController extends Controller
             'status' => 1,
             'message' => 'Login Successful.',
             'auth_token' => $user->createToken($user->email)->plainTextToken,
-            'role_level' => $user->role_level ?? 4,
+            'data' => new UserResource($user),
         ]);
     }
 
@@ -71,7 +72,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => 1,
             'message' => 'Password updated successfully.',
-            'data' => new AuthResource($data),
+            'data' => new UserResource($data),
         ]);
     }
 
@@ -79,7 +80,7 @@ class AuthController extends Controller
         $user_id = Auth::user()->id;
         $data = User::with(['role'])->find($user_id);
         return response()->json([
-            'data' => new AuthResource($data),
+            'data' => new UserResource($data),
         ]);
     }
 
@@ -95,15 +96,12 @@ class AuthController extends Controller
             ]);
         }
         $data = User::find($user_id);
-        $data->fname = $request->fname;
-        $data->lname = $request->lname;
+        $data->name = $request->name;
         $data->phone = $request->phone;
         $data->email = $request->email;
         $data->address = $request->address;
         $data->linkedin = $request->linkedin;
-        $data->acquisition = $request->acquisition;
         $data->bio = $request->bio;
-        $data->skillset = $request->skillset;
         $data->updated_at = now();
         $data->save();
         return response()->json([

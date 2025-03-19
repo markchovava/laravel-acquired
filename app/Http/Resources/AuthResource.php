@@ -17,21 +17,18 @@ class AuthResource extends JsonResource
         return [
             'id' => $this->id,
             'role_id' => $this->role_id,
-            'membership_id' => $this->membership_id,
-            'fname' => $this->fname,
-            'lname' => $this->lname,
+            'name' => $this->name,
+            'is_admin' => $this->is_admin,
             'address' => $this->address,
             'phone' => $this->phone,
             'email' => $this->email,
             'linkedin' => $this->linkedin,
-            'skillset' => $this->skillset,
-            'acquisition' => $this->acquisition,
             'bio' => $this->bio,
             'password' => $this->password,
+            'code' => $this->code,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'role' => new RoleResource($this->whenLoaded('role')),
-            'membership' => new MembershipResource($this->whenLoaded('membership')),
         ];
     }
 }

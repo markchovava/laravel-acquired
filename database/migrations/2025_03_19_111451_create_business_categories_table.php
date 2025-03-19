@@ -8,16 +8,17 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     * 'user_id',
+        'business_id',
+        'category_id',
      */
     public function up(): void
     {
-        Schema::create('memberships', function (Blueprint $table) {
+        Schema::create('business_categories', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
-            $table->string('name')->nullable();
-            $table->longText('description')->nullable();
-            $table->decimal('fee', 12, 2)->nullable();
+            $table->bigInteger('business_id')->nullable();
+            $table->bigInteger('category_id')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('memberships');
+        Schema::dropIfExists('business_categories');
     }
 };

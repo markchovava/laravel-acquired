@@ -23,6 +23,7 @@ class BusinessResource extends JsonResource
             'province_id' => $this->province_id,
             'image' => $this->image,
             'name' => $this->name,
+            'status' => $this->status,
             'description' => $this->description,
             'price' => $this->price,
             'address' => $this->address,

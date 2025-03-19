@@ -4,6 +4,7 @@ use App\Http\Controllers\AppInfoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BusinessCategoryController;
 use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\BusinessMessageController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\FaqController;
@@ -15,16 +16,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,19 +26,9 @@ Route::get('/', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-/* PROFILE */
-Route::prefix('profile')->group(function() {
-    Route::get('/', [AuthController::class, 'view']);
-    Route::post('/', [AuthController::class, 'store']);
-});
-Route::post('/password', [AuthController::class, 'password']);
-Route::post('/email', [AuthController::class, 'email']);
-Route::get('/logout', [AuthController::class, 'logout']);
-
 /* APPINFO */
 Route::prefix('app-info')->group(function() {
     Route::get('/', [AppInfoController::class, 'view']);
-    Route::post('/', [AppInfoController::class, 'store']);
 });
 
 /* BUSINESS */
@@ -54,6 +36,8 @@ Route::prefix('business')->group(function() {
     Route::get('/', [BusinessController::class, 'index']);
     Route::get('/{id}', [BusinessController::class, 'view']);
 });
+Route::get('/business-sort/{sort}', [BusinessController::class, 'sortBusiness']);
+Route::get('/business-search-city-category', [BusinessController::class, 'searchCityCategory']);
 Route::get('/business-user/{user_id}', [BusinessController::class, 'indexByUser']);
 Route::get('/business-city/{city_id}', [BusinessController::class, 'indexByCity']);
 Route::get('/business-province/{province_id}', [BusinessController::class, 'indexByProvince']);
@@ -61,14 +45,23 @@ Route::get('/business-search/{search}', [BusinessController::class, 'search']);
 Route::get('/business-user-search/{user_id}/{search}', [BusinessController::class, 'searchByUser']);
 Route::get('/business-city-search/{city_id}/{search}', [BusinessController::class, 'searchByCity']);
 Route::get('/business-province-search/{province_id}/{search}', [BusinessController::class, 'searchByProvince']);
-
 /* BUSINESS CATEGORY */
 Route::prefix('business-category')->group(function() {
     Route::get('/', [BusinessCategoryController::class, 'index']);
     Route::get('/{id}', [BusinessCategoryController::class, 'view']);
 });
-Route::get('/business-category-by-business/{business_id}', [BusinessController::class, 'indexByBusiness']);
-Route::get('/business-category-by-category/{category_id}', [BusinessController::class, 'indexByCategory']);
+Route::get('/business-message-index-by-status/{status}', [BusinessMessageController::class, 'indexByStatus']);
+Route::get('/business-message-index-all-by-status/{status}', [BusinessMessageController::class, 'indexAllByStatus']);
+Route::get('/business-category-by-business/{id}', [BusinessCategoryController::class, 'indexByBusiness']);
+Route::get('/business-category-by-category/{id}', [BusinessCategoryController::class, 'indexByCategory']);
+
+/* BUSINESS MESSAGE */
+Route::prefix('business-message')->group(function() {
+    Route::get('/', [BusinessMessageController::class, 'index']);
+    Route::post('/', [BusinessMessageController::class, 'store']);
+    Route::get('/{id}', [BusinessMessageController::class, 'view']);
+});
+Route::get('/business-message-search/{search}', [BusinessMessageController::class, 'search']);
 
 /* CATEGORY */
 Route::prefix('category')->group(function() {
@@ -77,7 +70,6 @@ Route::prefix('category')->group(function() {
 });
 Route::get('category-search/{search}', [CategoryController::class, 'search']);
 Route::get('category-all', [CategoryController::class, 'indexAll']);
-
 /* CITY */
 Route::prefix('city')->group(function() {
     Route::get('/', [CityController::class, 'index']);
@@ -86,7 +78,6 @@ Route::prefix('city')->group(function() {
 Route::get('city-search/{search}', [CityController::class, 'search']);
 Route::get('city-all', [CityController::class, 'indexAll']);
 Route::get('city-province/{province_id}', [CityController::class, 'indexByProvince']);
-
 /* FAQ */
 Route::prefix('faq')->group(function() {
     Route::get('/', [FaqController::class, 'index']);
@@ -94,7 +85,6 @@ Route::prefix('faq')->group(function() {
 });
 Route::get('faq-search/{search}', [FaqController::class, 'search']);
 Route::get('faq-all', [FaqController::class, 'indexAll']);
-
 /* MEMBERSHIP */
 Route::prefix('membership')->group(function() {
     Route::get('/', [MembershipController::class, 'index']);
@@ -102,15 +92,14 @@ Route::prefix('membership')->group(function() {
 });
 Route::get('membership-search/{search}', [MembershipController::class, 'search']);
 Route::get('membership-all', [MembershipController::class, 'indexAll']);
-
+Route::get('membership-first', [MembershipController::class, 'viewFirst']);
 /* PARTNER */
 Route::prefix('partner')->group(function() {
     Route::get('/', [PartnerController::class, 'index']);
     Route::get('/{id}', [PartnerController::class, 'view']);
 });
-Route::get('membership-search/{search}', [PartnerController::class, 'search']);
-Route::get('membership-all', [PartnerController::class, 'indexAll']);
-
+Route::get('partner-search/{search}', [PartnerController::class, 'search']);
+Route::get('partner-all', [PartnerController::class, 'indexAll']);
 /* PROVINCE */
 Route::prefix('province')->group(function() {
     Route::get('/', [ProvinceController::class, 'index']);
@@ -118,8 +107,6 @@ Route::prefix('province')->group(function() {
 });
 Route::get('province-search/{search}', [ProvinceController::class, 'search']);
 Route::get('province-all', [ProvinceController::class, 'indexAll']);
-
-
 /* ROLE */
 Route::prefix('role')->group(function() {
     Route::get('/', [RoleController::class, 'index']);
@@ -127,27 +114,19 @@ Route::prefix('role')->group(function() {
 });
 Route::get('/role-search/{search}', [RoleController::class, 'search']);
 Route::get('/role-all', [RoleController::class, 'indexAll']);
-
-
 /* USER */
 Route::prefix('user')->group(function() {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'view']);
 });
 Route::get('/user-search/{search}', [UserController::class, 'search']);
-
-
 /* SUBSCRIPTION */
 Route::prefix('subscription')->group(function() {
     Route::get('/', [SubscriptionController::class, 'index']);
+    Route::post('/', [SubscriptionController::class, 'store']);
     Route::get('/{id}', [SubscriptionController::class, 'view']);
+    Route::post('/{id}', [SubscriptionController::class, 'update']);
+    Route::delete('/{id}', [SubscriptionController::class, 'delete']);
 });
 Route::get('/subscription-user', [SubscriptionController::class, 'indexByUser']);
 Route::get('/subscription-search/{search}', [SubscriptionController::class, 'search']);
-
-
-
-
-
-
-

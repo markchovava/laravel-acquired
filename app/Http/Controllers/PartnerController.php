@@ -62,7 +62,7 @@ class PartnerController extends Controller
         return response()->json([
             'status' => 1,
             'message' => "Data saved successfully.",
-            'data' =>PartnerResource::collection($data)
+            'data' => new PartnerResource($data),
         ]);
     }
 
@@ -93,7 +93,7 @@ class PartnerController extends Controller
         return response()->json([
             'status' => 1,
             'message' => "Data saved successfully.",
-            'data' =>PartnerResource::collection($data)
+            'data' => new PartnerResource($data),
         ]);
     }
 

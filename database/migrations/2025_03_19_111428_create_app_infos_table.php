@@ -7,24 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * 
      * Run the migrations.
      * 
      */
     public function up(): void
     {
-        Schema::create('businesses', function (Blueprint $table) {
+        Schema::create('app_infos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
-            $table->bigInteger('category_id')->nullable();
-            $table->bigInteger('city_id')->nullable();
-            $table->bigInteger('province_id')->nullable();
-            $table->string('image')->nullable();
-            $table->longText('description')->nullable();
             $table->string('name')->nullable();
+            $table->string('address')->nullable();
             $table->string('phone')->nullable();
-            $table->longText('address')->nullable();
             $table->string('email')->nullable();
-            $table->decimal('price', 12, 2)->nullable();
+            $table->string('website')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('whatsapp')->nullable();
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('businesses');
+        Schema::dropIfExists('app_infos');
     }
 };

@@ -10,25 +10,24 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
+    
     protected $fillable = [
         'id',
+        'name',
         'role_level',
-        'membership_id',
-        'fname',
-        'lname',
-        'address',
-        'phone',
+        'is_admin',
         'email',
+        'phone',
+        'address',
         'linkedin',
-        'skillset',
-        'acquisition',
         'bio',
         'code',
         'password',
@@ -36,22 +35,19 @@ class User extends Authenticatable
         'updated_at',
     ];
 
-    public function membership(){
-        return $this->belongsTo(Membership::class, 'membership_id', 'id');
-    }
     
     public function role(){
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+        return $this->belongsTo(Role::class, 'role_level', 'level');
     }
 
-    
-   
-
+    public function businesses(){
+        return $this->hasMany(Business::class, 'user_id', 'id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -59,12 +55,17 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
 }

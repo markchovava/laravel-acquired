@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
         'user_id',
@@ -25,5 +22,4 @@ class Category extends Model
         return $this->belongsToMany(Business::class, 'business_categories', 'category_id', 'business_id')
             ->withTimestamps();
     }
-    
 }

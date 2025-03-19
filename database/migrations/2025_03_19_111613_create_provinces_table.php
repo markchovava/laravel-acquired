@@ -8,14 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
      */
     public function up(): void
     {
-        Schema::create('business_categories', function (Blueprint $table) {
+        Schema::create('provinces', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
-            $table->bigInteger('category_id')->nullable();
-            $table->bigInteger('business_id')->nullable();
+            $table->string('name')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('business_categories');
+        Schema::dropIfExists('provinces');
     }
 };

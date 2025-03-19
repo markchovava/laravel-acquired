@@ -12,11 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->nullable();
-            $table->integer('level')->nullable();
-            $table->string('name')->nullable();
+            $table->bigInteger('business_id')->nullable();
+            $table->string('status')->nullable();
+            $table->mediumInteger('amount_paid')->nullable();
+            $table->string('expiry_date')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('subscriptions');
     }
 };
