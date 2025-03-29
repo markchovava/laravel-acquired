@@ -46,12 +46,15 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         Route::post('/{id}', [BusinessController::class, 'update']);
         Route::delete('/{id}', [BusinessController::class, 'delete']);
     });
+    Route::get('/business-user', [BusinessController::class, 'indexByUser']);
+    Route::post('/business-status', [BusinessController::class, 'statusUpdate']);
+    Route::get('/business-status/{status}', [BusinessController::class, 'indexByStatus']);
+    Route::get('/business-status-active', [BusinessController::class, 'indexStatusActive']);
     Route::get('/business-search-city-category', [BusinessController::class, 'searchCityCategory']);
-    Route::get('/business-user/{user_id}', [BusinessController::class, 'indexByUser']);
     Route::get('/business-city/{city_id}', [BusinessController::class, 'indexByCity']);
     Route::get('/business-province/{province_id}', [BusinessController::class, 'indexByProvince']);
     Route::get('/business-search/{search}', [BusinessController::class, 'search']);
-    Route::get('/business-user-search/{user_id}/{search}', [BusinessController::class, 'searchByUser']);
+    Route::get('/business-user-search/{search}', [BusinessController::class, 'searchByUser']);
     Route::get('/business-city-search/{city_id}/{search}', [BusinessController::class, 'searchByCity']);
     Route::get('/business-province-search/{province_id}/{search}', [BusinessController::class, 'searchByProvince']);
     /* BUSINESS CATEGORY */
@@ -70,10 +73,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         Route::get('/{id}', [BusinessMessageController::class, 'view']);
         Route::delete('/{id}', [BusinessMessageController::class, 'delete']);
     });
+    Route::get('/business-message-user', [BusinessMessageController::class, 'indexByUser']);
+    Route::get('/business-message-user-search/{search}', [BusinessMessageController::class, 'searchByUser']);
+    Route::get('/business-message-index-by-status-user/{status}', [BusinessMessageController::class, 'indexByStatusUser']);
     Route::get('/business-message-index-by-status/{status}', [BusinessMessageController::class, 'indexByStatus']);
     Route::get('/business-message-index-all-by-status/{status}', [BusinessMessageController::class, 'indexAllByStatus']);
     Route::get('/business-message-search', [BusinessMessageController::class, 'search']);
-    Route::get('/business-message-by-user', [BusinessMessageController::class, 'indexByUser']);
     Route::post('/business-message-status', [BusinessMessageController::class, 'updateStatus']);
     
     /* CATEGORY */

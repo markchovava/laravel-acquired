@@ -16,9 +16,11 @@ class BusinessController extends Controller
     public $upload_location = 'assets/img/business/';
 
     public function sortBusiness($sort){
+        $status = 'Active'; 
         switch($sort) {
             case 'AscByName':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('name', 'ASC')
                         ->orderBy('updated_at', 'DESC')
                         ->paginate(12)
@@ -27,6 +29,7 @@ class BusinessController extends Controller
                 //break;
             case 'DescByName':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('name', 'DESC')
                         ->orderBy('updated_at', 'DESC')
                         ->paginate(12)
@@ -35,6 +38,7 @@ class BusinessController extends Controller
                 //break;
             case 'AscByPrice':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('price', 'ASC')
                         ->orderBy('updated_at', 'DESC')
                         ->paginate(12)
@@ -43,6 +47,7 @@ class BusinessController extends Controller
                 //break;
             case 'DescByPrice':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('price', 'DESC')
                         ->orderBy('updated_at', 'DESC')
                         ->paginate(12)
@@ -51,6 +56,7 @@ class BusinessController extends Controller
                 //break;
             case 'AscByDate':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('updated_at', 'ASC')
                         ->orderBy('name', 'ASC')
                         ->paginate(12)
@@ -59,29 +65,46 @@ class BusinessController extends Controller
                 //break;
             case 'DescByDate':
                 $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
                         ->orderBy('updated_at', 'DESC')
                         ->orderBy('name', 'DESC')
                         ->paginate(12)->withQueryString();
                 return BusinessResource::collection($data);
                 //break;
             default:
-                    $data = Business::with(['user', 'city', 'province', 'categories'])
-                    ->orderBy('updated_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate(12)
-                    ->withQueryString();
-                return BusinessResource::collection($data);
+                $data = Business::with(['user', 'city', 'province', 'categories'])
+                        ->where('status', $status)
+                        ->orderBy('updated_at', 'DESC')
+                        ->orderBy('name', 'ASC')
+                        ->paginate(12)
+                        ->withQueryString();
+            return BusinessResource::collection($data);
         }
     }
 
+    public function statusUpdate(Request $request) {
+        $data = Business::find($request->id);
+        $data->status = $request->status;
+        $data->updated_at = now();
+        $data->save();
+        /*  */
+        return response()->json([
+            'status' => 1,
+            'message' => 'Status updated successfully.',
+            'data' => new BusinessResource($data),
+        ]);
+    }
+
     public function searchCityCategory(Request $request) {
+        $status = 'Active'; 
         $city_id = $request->city_id;
         $category_id = $request->category_id;
         $search = $request->search;
         if(!empty($search) && !empty($category_id) && !empty($city_id)){
-            Log::info('All');
+            //Log::info('All');
             $businessIds = BusinessCategory::where('category_id', $category_id)->pluck('business_id');
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->where('city_id', $city_id)
                     ->whereIn('id', $businessIds)
                     ->where('name', 'LIKE', '%' . $search . '%')
@@ -91,8 +114,8 @@ class BusinessController extends Controller
             return BusinessResource::collection($data); 
         }
         else if(!empty($search) && empty($category_id) && empty($city_id)){
-            Log::info('name');
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->where('name', 'LIKE', '%' . $search . '%')
                     ->orderBy('updated_at', 'DESC')
                     ->orderBy('name', 'ASC')
@@ -100,10 +123,10 @@ class BusinessController extends Controller
             return BusinessResource::collection($data);
         }
         else if(empty($search) && !empty($category_id) && empty($city_id)){
-            Log::info('category_id');
             $businessIds = BusinessCategory::where('category_id', $category_id)->pluck('business_id');
             Log::info("category ids = $businessIds");
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->whereIn('id', $businessIds)
                     ->orderBy('updated_at', 'DESC')
                     ->orderBy('name', 'ASC')
@@ -112,6 +135,7 @@ class BusinessController extends Controller
         }
         else if(empty($search) && empty($category_id) && !empty($city_id)){
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->where('city_id', $city_id)
                     ->orderBy('updated_at', 'DESC')
                     ->orderBy('name', 'ASC')
@@ -120,8 +144,8 @@ class BusinessController extends Controller
         }
         else if(!empty($search) && !empty($category_id) && !empty($city_id)){
             $businessIds = BusinessCategory::where('category_id', $category_id)->pluck('business_id');
-            Log::info("search, category ids = $businessIds");
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->whereIn('id', $businessIds)
                     ->where('name', 'LIKE', '%' . $search . '%')
                     ->orderBy('updated_at', 'DESC')
@@ -133,6 +157,7 @@ class BusinessController extends Controller
             $businessIds = BusinessCategory::where('category_id', $category_id)->pluck('business_id');
             Log::info("city, category ids = $businessIds");
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->where('id', $businessIds)
                     ->where('city_id', $city_id)
                     ->orderBy('updated_at', 'DESC')
@@ -142,6 +167,7 @@ class BusinessController extends Controller
         }
         else if(!empty($search) && empty($category_id) && !empty($city_id)){
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('status', $status)
                     ->where('city_id', $city_id)
                     ->where('name', 'LIKE', '%' . $search . '%')
                     ->orderBy('updated_at', 'DESC')
@@ -151,18 +177,23 @@ class BusinessController extends Controller
         }
         else{
             $data = Business::with(['user', 'city', 'province', 'categories'])
+                 ->where('status', $status)
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
                 ->paginate(12)->withQueryString();
             return BusinessResource::collection($data);
         }
     }
-
-    public function index(){
+  
+    public function indexByStatus($status){
+        Log::info('$status');
+        Log::info($status);
         $data = Business::with(['user', 'city', 'province', 'categories'])
+                ->where('status', $status)
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
-                ->paginate(12)->withQueryString();
+                ->paginate(12)
+                ->withQueryString();
         return BusinessResource::collection($data);
     }
 
@@ -186,6 +217,59 @@ class BusinessController extends Controller
     }
 
     public function indexByProvince(Request $request){
+        $data = Business::with(['user', 'city', 'province', 'categories'])
+                ->where('province_id', $request->province_id)
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('name', 'ASC')
+                ->paginate(12)->withQueryString();
+        return BusinessResource::collection($data);
+    }
+
+    public function indexStatusActive() {
+        $data = Business::with(['user', 'city', 'province', 'categories'])
+                ->where('status', 'Active')
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('name', 'ASC')
+                ->paginate(12)->withQueryString();
+        return BusinessResource::collection($data);
+    }
+
+    public function index(){
+        $data = Business::with(['user', 'city', 'province', 'categories'])
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('name', 'ASC')
+                ->paginate(12)->withQueryString();
+        return BusinessResource::collection($data);
+    }
+
+    public function searchByCity($city_id, $search){
+        if(!empty($search)){
+            $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('city_id', $city_id)
+                    ->where('name', 'LIKE', '%' . $search . '%')
+                    ->orderBy('updated_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate(12)->withQueryString();
+            return BusinessResource::collection($data);
+        }
+        $data = Business::with(['user', 'city', 'province', 'categories'])
+                ->where('city_id', $city_id)
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('name', 'ASC')
+                ->paginate(12)->withQueryString();
+        return BusinessResource::collection($data);
+    }
+
+    public function searchByProvince(Request $request){
+        if(!empty($request->search)){
+            $data = Business::with(['user', 'city', 'province', 'categories'])
+                    ->where('province_id', $request->province_id)
+                    ->where('name', 'LIKE', '%' . $request->search . '%')
+                    ->orderBy('updated_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate(12)->withQueryString();
+            return BusinessResource::collection($data);
+        }
         $data = Business::with(['user', 'city', 'province', 'categories'])
                 ->where('province_id', $request->province_id)
                 ->orderBy('updated_at', 'DESC')
@@ -223,42 +307,6 @@ class BusinessController extends Controller
         }
         $data = Business::with(['user', 'city', 'province', 'categories'])
                 ->where('user_id', $user_id)
-                ->orderBy('updated_at', 'DESC')
-                ->orderBy('name', 'ASC')
-                ->paginate(12)->withQueryString();
-        return BusinessResource::collection($data);
-    }
-
-    public function searchByCity($city_id, $search){
-        if(!empty($search)){
-            $data = Business::with(['user', 'city', 'province', 'categories'])
-                    ->where('city_id', $city_id)
-                    ->where('name', 'LIKE', '%' . $search . '%')
-                    ->orderBy('updated_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate(12)->withQueryString();
-            return BusinessResource::collection($data);
-        }
-        $data = Business::with(['user', 'city', 'province', 'categories'])
-                ->where('city_id', $city_id)
-                ->orderBy('updated_at', 'DESC')
-                ->orderBy('name', 'ASC')
-                ->paginate(12)->withQueryString();
-        return BusinessResource::collection($data);
-    }
-
-    public function searchByProvince(Request $request){
-        if(!empty($request->search)){
-            $data = Business::with(['user', 'city', 'province', 'categories'])
-                    ->where('province_id', $request->province_id)
-                    ->where('name', 'LIKE', '%' . $request->search . '%')
-                    ->orderBy('updated_at', 'DESC')
-                    ->orderBy('name', 'ASC')
-                    ->paginate(12)->withQueryString();
-            return BusinessResource::collection($data);
-        }
-        $data = Business::with(['user', 'city', 'province', 'categories'])
-                ->where('province_id', $request->province_id)
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
                 ->paginate(12)->withQueryString();
@@ -314,7 +362,7 @@ class BusinessController extends Controller
         $data->city_id = $request->city_id;
         $data->province_id = $request->province_id;
         $data->name = $request->name;
-        $data->status = $request->status;
+        //$data->status = $request->status;
         $data->phone = $request->phone;
         $data->email = $request->email;
         $data->address = $request->address;

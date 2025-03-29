@@ -19,6 +19,17 @@ class BusinessMessageController extends Controller
         return BusinessMessageResource::collection($data);
     }
     
+    public function indexByStatusUser($status) {
+        $user_id = Auth::user()->id;
+        $data = BusinessMessage::with(['user', 'business'])
+            ->where('user_id', $user_id)
+            ->where('status', $status)
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('name', 'ASC')
+            ->paginate(12);
+        return BusinessMessageResource::collection($data);
+    }
+    
     public function indexByStatus($status) {
         $data = BusinessMessage::with(['user', 'business'])
             ->where('status', $status)
@@ -40,13 +51,35 @@ class BusinessMessageController extends Controller
         ]);
     }
    
+    public function searchByUser($search){
+        $user_id = Auth::user()->id;
+        if(!empty($search)){
+            $data = BusinessMessage::with(['user', 'business'])
+                    ->where('user_id', $user_id)
+                    ->where('name', 'LIKE', '%' . $search . '%')
+                    ->orderBy('updated_at', 'DESC')
+                    ->orderBy('name', 'ASC')
+                    ->paginate(12)
+                    ->withQueryString();
+            return BusinessMessageResource::collection($data);
+        }
+        $data = BusinessMessage::with(['user', 'business'])
+                ->where('user_id', $user_id)
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('name', 'ASC')
+                ->paginate(12)
+                ->withQueryString();
+        return BusinessMessageResource::collection($data);
+    }
+
     public function indexByUser(){
         $user_id = Auth::user()->id;
         $data = BusinessMessage::with(['user', 'business'])
                 ->where('user_id', $user_id)
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
-                ->paginate(12);
+                ->paginate(12)
+                ->withQueryString();
         return BusinessMessageResource::collection($data);
     }
 
@@ -54,7 +87,8 @@ class BusinessMessageController extends Controller
         $data = BusinessMessage::with(['user', 'business'])
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
-                ->paginate(12);
+                ->paginate(12)
+                ->withQueryString();
         return BusinessMessageResource::collection($data);
     }
 
@@ -64,13 +98,15 @@ class BusinessMessageController extends Controller
                     ->where('name', 'LIKE', '%' . $search . '%')
                     ->orderBy('updated_at', 'DESC')
                     ->orderBy('name', 'ASC')
-                    ->paginate(12);
+                    ->paginate(12)
+                    ->withQueryString();
             return BusinessMessageResource::collection($data);
         }
         $data = BusinessMessage::with(['user', 'business'])
                 ->orderBy('updated_at', 'DESC')
                 ->orderBy('name', 'ASC')
-                ->paginate(12);
+                ->paginate(12)
+                ->withQueryString();
         return BusinessMessageResource::collection($data);
     }
 
@@ -82,6 +118,7 @@ class BusinessMessageController extends Controller
     public function store(Request $request) {
         $data = new BusinessMessage();
         $data->business_id = $request->business_id;
+        $data->user_id = $request->user_id;
         $data->name = $request->name;
         $data->phone = $request->phone;
         $data->email = $request->email;

@@ -39,7 +39,10 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
+        Log::info($request);
         $user = User::with(['role'])->where('email', $request->email)->first();
+        Log::info('$user');
+        Log::info($user);
         /* Check Email... */
         if(!isset($user)){
             return response()->json([
